@@ -54,7 +54,7 @@ def add_reviews_to_dict(start, end, base_url, tag_type, review_dct, class_names=
                               class_names=class_names, attrs_=attrs)
         if result:
             for span in result:
-                if span.text not in stop_list and len(span.text.split()) > 3:
+                if span.text not in stop_list and len(span.text.split()) > 7:
                     r.append(span.text)
         review_dct[website] = r
 
