@@ -1,53 +1,93 @@
 import streamlit as st
-from textblob import TextBlob
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import pandas as pd
+import plotly.express as px
 
 # Set page title
-st.title("Amtrak Reviews Dashboard")
-
-# Sub header
-st.subheader("Data Sample")
+st.title("Amtrak Reviews Dashboard 🚆")
 
 # Show DataFrame
-df = pd.read_csv("/Users/srihariraman/PycharmProjects/AmtrakTwitterAnalysis/Amtrak-Twitter-Analysis/reviews_cleaned.csv")
+df = pd.read_csv("/Users/srihariraman/PycharmProjects/Amtrak-Review-Analysis/reviews_cleaned.csv")
 df.drop(["Unnamed: 0"], axis=1, inplace=True)
-st.data_editor(df.head(10), hide_index=True, use_container_width=True)
 
 # Sidebar for user input
 st.sidebar.header("Development:")
 
 
-st.sidebar.write('This dashboard and supplemental analysis was made by Srihari Raman! '
-                 'The full analysis document can be found '
+st.sidebar.write('This dashboard and supplemental analysis was made by Srihari Raman! ')
+st.sidebar.write('The full analysis document can be found '
                  '[here](https://github.com/thealphacubicle/Amtrak-Review-Analysis)!')
 
 st.sidebar.header('Contact the Developer:')
-st.sidebar.write('Github Link: [@thealphacubicle](https://github.com/thealphacubicle)')
+st.sidebar.write('Github: [@thealphacubicle](https://github.com/thealphacubicle)')
+st.sidebar.write('LinkedIn: [@srihari-r](https://www.linkedin.com/in/srihari-r-006034176/)')
 st.sidebar.write('Email: srihariraman9@gmail.com')
 
-# Sentiment Analysis using TextBlob
-if text_input:
-    st.header("Sentiment Analysis using TextBlob")
-    blob = TextBlob(text_input)
-    sentiment_score = blob.sentiment.polarity
-    if sentiment_score > 0:
-        sentiment_label = "Positive"
-    elif sentiment_score < 0:
-        sentiment_label = "Negative"
-    else:
-        sentiment_label = "Neutral"
+# Create tabs
+t1, t2, t3 = st.tabs(['Data', 'Visualizations', 'Analysis'])
 
-    st.write(f"Sentiment Score: {sentiment_score:.2f}")
-    st.write(f"Sentiment Label: {sentiment_label}")
+# Tab 1: Data
+with t1:
+    with st.container():
+        # Data about df
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Number of Reviews:", f"{df.shape[0]}")
+        col2.metric("Number of Features", f"{df.shape[1]}")
+        col3.metric("Average Sentiment Score", round(df['review_polarity'].mean(),3),
+                    f"{round(0+df['review_polarity'].mean(), 4) * 100}%")
+        col4.metric("Average Subjectivity Score", round(df['review_subjectivity'].mean(), 3),
+                    f"{round(0 + df['review_subjectivity'].mean(), 4) * 100}%")
 
-# Sentiment Analysis using VADER
-if text_input:
-    st.header("Sentiment Analysis using VADER")
-    analyzer = SentimentIntensityAnalyzer()
-    vader_scores = analyzer.polarity_scores(text_input)
+        # Show df sample
+        st.subheader("Data Sample")
+        st.data_editor(df.iloc[345:355], hide_index=True, use_container_width=True)
 
-    st.write(f"Positive Score: {vader_scores['pos']:.2f}")
-    st.write(f"Neutral Score: {vader_scores['neu']:.2f}")
-    st.write(f"Negative Score: {vader_scores['neg']:.2f}")
-    st.write(f"Compound Score: {vader_scores['compound']:.2f}")
+
+with t2:
+    # CONTAINER 1
+    with st.container():
+        st.subheader("Review Source Class Diagram")
+
+        # Plot
+        st.plotly_chart(px.bar(df, x="Website", color="Website"))
+
+        # Expander with analysis
+        with st.expander(label="See in-depth explanation:"):
+            st.write("Post-processing, we can see that Amtrak reviews are not equally balanced in this dataset, "
+                     "with there being class imbalance in the number of reviews originating from each website. "
+                     "TrustPilot and ComplaintsBoard make up a majority of the reviews, hence meaning that polarity and "
+                     "sentiment metrics calculated are likely to be more biased towards these reviews.")
+    st.divider()
+
+    # CONTAINER 2
+    with st.container():
+        st.subheader("Sentiment Score Distribution by Website")
+
+        # Plot
+        st.plotly_chart(px.box(df, x="Website", y="review_polarity", color="Website", points="outliers"))
+
+        # Expander with analysis
+        with st.expander(label="See in-depth explanation:"):
+            st.write("Analyzing by website, we see that 3 of 4 analyzed websites are skewed more negatively, with the "
+                     "distribution of average review sentiment scores for the 3 websites being centered more around "
+                     "-1.0. However, the only website to have more positive reviews is Yelp.com. This could pose an "
+                     "interesting question as to whether or not Yelp reviews are actually made by consumers who've "
+                     "experienced journeys on Amtrak.")
+    st.divider()
+
+    # CONTAINER 3
+    with st.container():
+        st.subheader("Subjectivity Distribution by Website")
+        st.caption('*Outliers are shown as data points*')
+
+        # Plot
+        st.plotly_chart(px.box(df, x="Website", y="review_subjectivity", color="Website"))
+
+        # Expander with analysis
+        with st.expander(label="See in-depth explanation:"):
+            st.write("Similarly, the subjectivity scores of the websites are relatively similar in that their "
+                     "distributions are approximately unimodal and centered around 0.5. However, SiteJabber seems to "
+                     "lean more towards fact-based evidence. Through descriptive analysis (see tables above), we can "
+                     "see than 75% of review sentiment scores being centered between 0.52-0.63. Thus, we can see that "
+                     "of the four websites analyzed in this project, most of the reviews are neutral in terms of being "
+                     "opinionated and fact-based.")
+    st.divider()

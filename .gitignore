@@ -6,3 +6,6 @@
 .idea/vcs.xml
 __pycache__/scrape.cpython-39.pyc
 .ipynb_checkpoints/Amtrak_Reviews_Analysis-checkpoint.ipynb
+.idea/Amtrak-Review-Analysis.iml
+.idea/csv-editor.xml
+.idea/modules.xml
