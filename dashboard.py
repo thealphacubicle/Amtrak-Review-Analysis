@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from annotated_text import annotated_text
 
 # Set page title
 st.title("Amtrak Reviews Dashboard 🚆")
@@ -41,11 +42,11 @@ with t1:
         st.subheader("Data Sample")
         st.data_editor(df.iloc[345:355], hide_index=True, use_container_width=True)
 
-
+# Tab 2: Visualizations
 with t2:
     # CONTAINER 1
     with st.container():
-        st.subheader("Review Source Class Diagram")
+        st.subheader("Website Class Distribution")
 
         # Plot
         st.plotly_chart(px.bar(df, x="Website", color="Website"))
@@ -74,6 +75,27 @@ with t2:
                      "experienced journeys on Amtrak.")
     st.divider()
 
+    with st.container():
+        st.subheader("Overall Subjectivity Distribution")
+        st.caption('*Outliers are shown as data points*')
+
+        # Plot
+        st.plotly_chart(px.box(df, y="review_subjectivity", points="outliers"))
+
+        st.subheader("Overall Sentiment Distribution")
+        # Plot
+        st.plotly_chart(px.box(df, y="review_polarity", points="outliers"))
+
+
+        # Expander with analysis
+        with st.expander(label="See in-depth explanation:"):
+            st.write("Overall, Amtrak's customer reviews are either skewed more negatively or positively, with the "
+                     "overall outlook being more negative than positive. The overall sentiment score is centered more "
+                     "around -1.0 and 0.7, thus meaning that customers either had a great experience or a very negative "
+                     "experience. In contrast, the overall subjectivity score distribution is more unimodal, "
+                     "centered around approximately 0.5. This means that, overall, customer reviews were balanced in "
+                     "terms of opinionated or fact-based.")
+    st.divider()
     # CONTAINER 3
     with st.container():
         st.subheader("Subjectivity Distribution by Website")
@@ -91,3 +113,31 @@ with t2:
                      "of the four websites analyzed in this project, most of the reviews are neutral in terms of being "
                      "opinionated and fact-based.")
     st.divider()
+
+# Tab 3: Analysis
+with t3:
+    with st.container():
+        st.subheader("Common Topics of Concern:")
+        annotated_text(("Time", "Scheduling"), ("Trip", "Overall Experience"), ("People", "Customer Service"),
+                       ("Hour", "Scheduling"),("Food", "Customer Service"))
+        st.subheader("Recommendations")
+        st.write("In the analysis, I also wanted to look at which words most frequently occured in the reviews. On an "
+                 "aggregated level, the most apparent words were **time**, **ticket**, **trip**, and **hour**. "
+                 "This means that most of the reviews (by making a loose-level guess) were concerned either about train "
+                 "timings or trip/ticketing experiences. Because the overall sentiment towards Amtrak is negative, it is "
+                 "likely that these topics are what caused a slim majority of customers dissatisfaction.")
+        st.write("When analyzing website-specific review content, Yelp reviews were more centered around the Acela "
+                 "exeperience. A lot of reviews seemed to be concerned with the Boston train, with **time** and "
+                 "**ticket**, and **seat** being some of the important keywords. Because Yelp was a much more "
+                 "positively-skewed website, it is likely that Amtrak should focus on their strengths with the Acela "
+                 "Express and try and cross-implement them with their other services.")
+        st.write("Trustpilot was more concerned around the **time**, **trip**, **food**, and **people**. Because it "
+                 "was one of the negatively-skewed review sites, Amtrak should take a look at things like train timing, "
+                 "overall trip experiences, food quality/taste, and the staff that work on these trains. By improving "
+                 "these segments, Amtrak is likely to acquire more customer satisfaction!")
+        st.write("Complaintsboard and Sitejabber were similar in that the overall topics concerned around timing and "
+                 "service on the trains.  Keywords in these reviews included **ticket**, **time**, **customer**, and "
+                 "**experience**. This likely means that customers posting on this site had an issue with train "
+                 "timing/scheduling and customer service. Amtrak should analyze the customer service experience they "
+                 "are providing—customer service representatives, train staff, etc.—and should focus on improving those "
+                 "segments as well!")
