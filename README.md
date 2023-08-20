@@ -33,7 +33,7 @@ pip install annotated_text
 ```
 2. **Run on local host:**
 ```
-streamlit run [path/to/dashboard.py]
+streamlit run https://raw.githubusercontent.com/thealphacubicle/Amtrak-Review-Analysis/main/dashboard.py
 ```
 ### Communal Development:
 When opening issues, please adhere to the following guidelines:
