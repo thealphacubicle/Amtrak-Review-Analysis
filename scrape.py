@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
-import re
+from urllib.parse import urlparse
+
 
 def get_all_tags(url, tag_type, class_names=None, attrs_=None):
     """Returns a list of all requested tags
@@ -32,8 +33,12 @@ def get_all_tags(url, tag_type, class_names=None, attrs_=None):
         return None
 
 def get_website_name(url):
-    website_name = re.search(r'://(?:www\.)?([^/]+)', url).group(1)
-    return website_name
+    parsed_url = urlparse(url)
+    if parsed_url.netloc:
+        return parsed_url.netloc
+    else:
+        return None
+
 
 def print_review_count(review_dict):
     for key, value in review_dict.items():
@@ -57,4 +62,3 @@ def add_reviews_to_dict(start, end, base_url, tag_type, review_dct, class_names=
                 if span.text not in stop_list and len(span.text.split()) > 7:
                     r.append(span.text)
         review_dct[website] = r
-
