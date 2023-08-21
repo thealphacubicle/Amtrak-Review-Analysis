@@ -7,8 +7,14 @@ from annotated_text import annotated_text
 st.title("Amtrak Reviews Dashboard 🚆")
 
 # Show DataFrame
-df = pd.read_csv("https://raw.githubusercontent.com/thealphacubicle/Amtrak-Review-Analysis/main/reviews_cleaned.csv")
-df.drop(["Unnamed: 0"], axis=1, inplace=True)
+@st.cache_data
+def load_data():
+    df = pd.read_csv("https://raw.githubusercontent.com/thealphacubicle/Amtrak-Review-Analysis/main/reviews_cleaned.csv")
+    df.drop(["Unnamed: 0"], axis=1, inplace=True)
+    return df
+
+# Load dataframe
+df = load_data()
 
 # Sidebar for user input
 st.sidebar.header("Development:")
