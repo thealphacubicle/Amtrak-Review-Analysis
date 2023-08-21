@@ -27,9 +27,6 @@ welcome!
 1. **Install dependencies**:
 ```
 pip install streamlit
-pip install pandas
-pip install plotly
-pip install annotated_text
 ```
 2. **Run on local host:**
 ```
