@@ -14,7 +14,8 @@ def load_data():
     return df
 
 # Load dataframe
-df = load_data()
+with st.spinner("Loading..."):
+    df = load_data()
 
 # Sidebar for user input
 st.sidebar.header("Development:")
